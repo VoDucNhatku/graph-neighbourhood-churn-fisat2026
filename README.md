@@ -5,7 +5,7 @@
 **Sub-committee:** Economic & Business — AI Research Team
 
 **Paper:** EAI FISAT 2026, paper #366956 (short paper, accepted). The camera-ready
-version is tagged `v1.1-camera-ready`; the version that went to review is tagged
+version is tagged `v1.1`; the version that went to review is tagged
 `v1.0-submission`. Every number in both versions comes from the same result files.
 
 ---
