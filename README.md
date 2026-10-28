@@ -147,7 +147,7 @@ mistake this project made and corrected.
 ├── results_rerun/                # raw run logs, kept as provenance
 ├── paper/
 │   ├── main.tex, refs.bib        # LNCS camera-ready manuscript, 16 verified references
-│   ├── main.pdf                  # compiled, 11 pages + references
+│   ├── main.pdf                  # compiled, 12 pages
 │   └── figures/                  # generated, not hand-drawn
 ├── data/.gitkeep                 # dataset not tracked; see Dataset below
 ├── requirements.txt              # pinned to the environment that produced results/
