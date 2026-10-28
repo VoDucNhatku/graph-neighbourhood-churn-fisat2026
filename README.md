@@ -1,12 +1,62 @@
 # When Graph-Derived Neighbourhood Features Do Not Help: A Leakage-Controlled Evaluation of Behavioural-LRFM Churn Prediction in Non-Contractual Retail
 
-**Authors:** Võ Đức Nhật, Dương Gia Bảo, Trần Nguyễn Minh Hải  
-**Mentor:** Nguyễn Hoàng Linh  
-**Sub-committee:** Economic & Business — AI Research Team
+**Duc Nhat Vo, Gia Bao Duong, Nguyen Minh Hai Tran** (Võ Đức Nhật, Dương Gia Bảo, Trần Nguyễn Minh Hải)  
+FPT University, Ho Chi Minh City, Vietnam  
+**Mentor:** Nguyễn Hoàng Linh · **Sub-committee:** Economic & Business — AI Research Team
 
-**Paper:** EAI FISAT 2026, paper #366956 (short paper, accepted). The camera-ready
-version is tagged `v1.1`; the version that went to review is tagged
-`v1.0-submission`. Every number in both versions comes from the same result files.
+Short paper at **EAI FISAT 2026**, the 1st EAI FPT International Conference on Intelligent
+Systems and Advanced Technologies (Ho Chi Minh City, 25–27 November 2026), to appear in
+EAI/Springer Innovations in Communication and Computing. Paper #366956.
+
+[Paper (PDF)](paper/main.pdf) · [Citation](#citation) · [Reproduce](#running-the-pipeline) · [License](#license)
+
+| Version | Tag | What it is |
+|---|---|---|
+| Camera-ready | [`v1.1`](../../tree/v1.1) | The version cited in the paper's reproducibility statement |
+| Submitted for review | [`v1.0-submission`](../../tree/v1.0-submission) | Unchanged reviewed version |
+
+Both versions use the same code and the same result files; the camera-ready changes are in
+the manuscript only, plus `src/cross_model_test.py`, which recomputes Table 2 from the
+committed per-fold scores.
+
+### Abstract
+
+Customer similarity graphs are an appealing addition to RFM-style churn models. If churn
+spreads through behavioural peer groups, the churn rate among a customer's nearest
+neighbours should help predict that customer's own churn. We test that idea on the Online
+Retail II dataset under two controls. First, the neighbourhood and community churn rates
+are recomputed inside every training fold, so no test label reaches the feature matrix.
+Second, every comparison runs over ten repetitions of five-fold cross-validation and is
+judged by the corrected resampled t-test rather than by a single split. Under these
+controls the idea does not hold. With the classifier fixed, no feature tier beats a plain
+three-variable RFM baseline, on either ROC-AUC or PR-AUC, for either classifier, at any
+graph degree from 5 to 20. The graph-enhanced tier gains +0.0033 ROC-AUC on one fold
+partition and reverses sign across ten. Every significant difference involves a change of
+classifier, so none speaks to the graph features. Attribution and contribution also come
+apart: the neighbourhood churn rate ranks third by SHAP, yet removing the graph features
+costs nothing. Because the k-NN graph is built on the features the classifier already
+uses, its neighbourhood churn rate largely restates existing information by construction;
+a graph built from co-purchase or referral links may behave differently. We argue that
+single-split evaluation cannot separate an effect this small from fold noise.
+
+### Citation
+
+```bibtex
+@inproceedings{vo2026graphneighbourhood,
+  author    = {Vo, Duc Nhat and Duong, Gia Bao and Tran, Nguyen Minh Hai},
+  title     = {When Graph-Derived Neighbourhood Features Do Not Help: A Leakage-Controlled
+               Evaluation of Behavioural-{LRFM} Churn Prediction in Non-Contractual Retail},
+  booktitle = {Proceedings of the 1st EAI FPT International Conference on Intelligent
+               Systems and Advanced Technologies (FISAT 2026)},
+  series    = {EAI/Springer Innovations in Communication and Computing},
+  publisher = {Springer},
+  year      = {2026},
+  note      = {To appear}
+}
+```
+
+GitHub's "Cite this repository" button reads the same entry from [`CITATION.cff`](CITATION.cff).
+The DOI will be added once the proceedings are published.
 
 ---
 
@@ -33,8 +83,8 @@ This repository implements a complete machine learning pipeline for customer chu
 
 **Honest finding.** The pipeline is fully implemented and leak-free, but it does not beat
 its own baseline. Under repeated cross-validation the graph-derived features add nothing
-measurable to churn prediction, and a plain logistic regression on three RFM variables
-significantly outperforms the graph-enhanced gradient-boosted model. This repository is
+measurable to churn prediction. The only significant differences are between classifiers
+(logistic regression beats LightGBM), not between feature sets. This repository is
 therefore reported as a **negative result with a working, reproducible pipeline**, not as
 a performance improvement. See [Key Results](#key-results).
 
@@ -186,8 +236,8 @@ Place the downloaded `.xlsx` file as `online_retail_II.xlsx` in the project root
 ## Setup & Installation
 
 ```bash
-git clone https://github.com/VoDucNhatku/graph-behavioral-lrfm-churn.git
-cd graph-behavioral-lrfm-churn
+git clone https://github.com/VoDucNhatku/graph-neighbourhood-churn-fisat2026.git
+cd graph-neighbourhood-churn-fisat2026
 
 pip install -r requirements.txt
 
@@ -318,5 +368,8 @@ Key references (full list in Research Proposal):
 
 ## License
 
-This project is for academic research purposes.  
-Dataset: [Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii) — UCI ML Repository, CC BY 4.0.
+Code and result files are released under the [MIT License](LICENSE).
+The manuscript in `paper/` is the authors' own version; copyright in the published
+version is transferred to EAI.  
+Dataset: [Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii) — UCI ML Repository, CC BY 4.0
+(not redistributed here).

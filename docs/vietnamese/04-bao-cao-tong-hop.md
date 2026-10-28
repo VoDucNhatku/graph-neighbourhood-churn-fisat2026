@@ -72,7 +72,7 @@ Email acceptance mà tác giả cung cấp giới hạn sửa sát reviewer comm
 
 Sidebar contributors đã được refresh về tài khoản chủ repo; sau đó tên Nguyễn Công Minh trong dòng Authors README được gỡ theo yêu cầu. Không rewrite commit history để tạo một bản nghiên cứu khác.
 
-Nguồn: remote Git tree đã đối chiếu và [manifest nguồn](evidence/source-identity.json). Kho công khai: [graph-behavioral-lrfm-churn](https://github.com/VoDucNhatku/graph-behavioral-lrfm-churn).
+Nguồn: remote Git tree đã đối chiếu và [manifest nguồn](evidence/source-identity.json). Kho công khai: [graph-neighbourhood-churn-fisat2026](https://github.com/VoDucNhatku/graph-neighbourhood-churn-fisat2026).
 
 ### 4.2. Raw data và feature cache
 

@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use this code or these results, please cite the paper below."
+title: "graph-neighbourhood-churn-fisat2026"
+version: "1.1"
+date-released: "2026-10-28"
+license: MIT
+repository-code: "https://github.com/VoDucNhatku/graph-neighbourhood-churn-fisat2026"
+authors:
+  - family-names: Vo
+    given-names: Duc Nhat
+    affiliation: FPT University
+  - family-names: Duong
+    given-names: Gia Bao
+    affiliation: FPT University
+  - family-names: Tran
+    given-names: Nguyen Minh Hai
+    affiliation: FPT University
+keywords:
+  - churn prediction
+  - RFM
+  - customer similarity graph
+  - community detection
+  - repeated cross-validation
+  - negative result
+preferred-citation:
+  type: conference-paper
+  title: "When Graph-Derived Neighbourhood Features Do Not Help: A Leakage-Controlled Evaluation of Behavioural-LRFM Churn Prediction in Non-Contractual Retail"
+  authors:
+    - family-names: Vo
+      given-names: Duc Nhat
+      affiliation: FPT University
+    - family-names: Duong
+      given-names: Gia Bao
+      affiliation: FPT University
+    - family-names: Tran
+      given-names: Nguyen Minh Hai
+      affiliation: FPT University
+  collection-title: "Proceedings of the 1st EAI FPT International Conference on Intelligent Systems and Advanced Technologies (FISAT 2026)"
+  collection-type: proceedings
+  conference:
+    name: "EAI FISAT 2026"
+    city: "Ho Chi Minh City"
+    country: VN
+    date-start: "2026-11-25"
+    date-end: "2026-11-27"
+  publisher:
+    name: Springer
+  year: 2026

@@ -9,7 +9,7 @@
 
 Notebook tự chứa runner; chỉ cần upload `.ipynb`, không cần upload file `.py`, ZIP code hoặc raw data. Khi dùng local Jupyter, các cell vẫn tạo môi trường riêng; cần Git và kết nối mạng.
 
-Code chính thức: [graph-behavioral-lrfm-churn](https://github.com/VoDucNhatku/graph-behavioral-lrfm-churn), commit `fdbbccfc8c0ee91fcefb8f8f3a82f0ee7ada89a4`. Raw: [UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online%2Bretail%2Bii), Chen, D. (2012), DOI 10.24432/C5CG6D, CC BY 4.0. Dữ liệu tải về được kiểm SHA256 giống bản ổ D đã audit.
+Code chính thức: [graph-neighbourhood-churn-fisat2026](https://github.com/VoDucNhatku/graph-neighbourhood-churn-fisat2026), commit `fdbbccfc8c0ee91fcefb8f8f3a82f0ee7ada89a4`. Raw: [UCI Online Retail II](https://archive.ics.uci.edu/dataset/502/online%2Bretail%2Bii), Chen, D. (2012), DOI 10.24432/C5CG6D, CC BY 4.0. Dữ liệu tải về được kiểm SHA256 giống bản ổ D đã audit.
 
 Thực đo trên máy Windows ngày 12/10/2026: full suite **17 phút 42 giây**, raw CV **166 giây**, cached k10 **100 giây**; chưa tính cài môi trường. Chưa đo thời gian trên Colab. Chọn GPU không tự làm code CPU nhanh hơn; nguồn CPU Colab và thời gian cài/download có thể khác.
 
