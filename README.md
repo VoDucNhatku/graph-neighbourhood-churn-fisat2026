@@ -1,6 +1,6 @@
 # When Graph-Derived Neighbourhood Features Do Not Help: A Leakage-Controlled Evaluation of Behavioural-LRFM Churn Prediction in Non-Contractual Retail
 
-**Authors:** Võ Đức Nhật, Dương Gia Bảo  
+**Authors:** Võ Đức Nhật, Dương Gia Bảo, Trần Nguyễn Minh Hải  
 **Mentor:** Nguyễn Hoàng Linh  
 **Sub-committee:** Economic & Business — AI Research Team
 
