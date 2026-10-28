@@ -13,23 +13,6 @@
 % Absorbs the last few points of overfull lines without visibly loosening spacing.
 \setlength{\emergencystretch}{3em}
 
-% Springer's own abstract style insets the block 1 cm on both sides and runs the
-% word "Abstract." into the first line as a side label. Set the block flush with
-% the text width and give the heading its own line. Revert by deleting this block
-% if the target venue enforces the stock layout.
-\makeatletter
-\def\abstractname{Abstract}
-\renewenvironment{abstract}{%
-  \list{}{\advance\topsep by0.35cm\relax\small
-    \leftmargin=\z@
-    \rightmargin=\z@
-    \labelwidth=\z@
-    \listparindent=\z@
-    \itemindent=\z@}%
-  \item[]{\centering\bfseries\abstractname\par}\nobreak\vskip 3pt\noindent\ignorespaces}%
-  {\endlist}
-\makeatother
-
 \begin{document}
 
 \title{When Graph-Derived Neighbourhood Features Do Not Help:
@@ -38,31 +21,35 @@ in Non-Contractual Retail}
 
 \titlerunning{When Graph-Derived Neighbourhood Features Do Not Help}
 
-\author{Duc Nhat Vo}
-\authorrunning{~}
+\author{Duc Nhat Vo \and Gia Bao Duong}
+\authorrunning{D. N. Vo and G. B. Duong}
 \institute{FPT University, Ho Chi Minh City, Vietnam\\
-\email{voducnhat242006@gmail.com}}
+\email{voducnhat242006@gmail.com, ilyrabao@gmail.com}}
 
 \maketitle
 
 \begin{abstract}
-Customer similarity graphs are an appealing addition to RFM-style churn models.
-If churn spreads through behavioural peer groups, the churn rate among a
+Customer similarity graphs are an appealing addition to RFM-style churn models:
+if churn spreads through behavioural peer groups, the churn rate among a
 customer's nearest neighbours should help predict that customer's own churn. We
-test that idea on the Online Retail II dataset under two controls. First, the
+test that idea on the Online Retail II dataset under two controls. The
 neighbourhood and community churn rates are recomputed inside every training
-fold, so no test label reaches the feature matrix. Second, every comparison runs
-over ten repetitions of five-fold cross-validation and is judged by the corrected
-resampled $t$-test rather than by a single split. Under these controls the idea
-does not hold. No feature tier beats a plain three-variable RFM baseline, on
-either ROC-AUC or PR-AUC, for either classifier. The finding holds as the graph degree varies from 5 to 20. The graph-enhanced tier gains
-$+0.0033$ ROC-AUC on one fold partition and reverses sign across ten. The only
-significant comparison points the other way: logistic regression on the three raw
-RFM variables beats the 38-feature gradient-boosted graph model ($p = 0.010$).
-Attribution and contribution also come apart, since the neighbourhood churn rate
-ranks third by SHAP yet removing it costs nothing. We report the pipeline, the
-controls and the negative outcome, and argue that single-split evaluation cannot
-separate an effect this small from fold noise.
+fold, so no test label reaches the feature matrix, and every comparison runs over
+ten repetitions of five-fold cross-validation, judged by the corrected resampled
+$t$-test rather than by a single split. Under these controls the idea does not
+hold. With the classifier held fixed, no feature tier beats a plain
+three-variable RFM baseline on ROC-AUC or PR-AUC, for either of two classifiers,
+at any graph degree from 5 to 20. The graph-enhanced tier gains $+0.0033$ ROC-AUC
+on one fold partition and reverses sign across ten. The significant differences
+we observe are between classifiers, not feature sets, and so carry no evidence
+about the graph. The neighbourhood churn rate ranks third by SHAP, yet removing
+all six graph features costs nothing. Our graph links customers by $k$-nearest-neighbour
+similarity on the same standardised features the classifier already receives,
+so by construction its neighbourhood churn rate is close to a smoothed
+restatement of existing information; a graph built from an independent
+interaction signal, such as co-purchase or referral links, may behave
+differently. We argue that single-split evaluation cannot separate effects this
+small from fold noise.
 
 \keywords{Churn prediction \and RFM \and Customer similarity graph \and
 Community detection \and Repeated cross-validation \and Negative result.}
@@ -115,10 +102,10 @@ With both controls in place, the effect the pipeline was built to demonstrate
 disappears. We state our contributions conservatively:
 
 \begin{itemize}
-\item A negative result, reported as such: neither the behavioural extension nor
-the graph features improve discrimination over a three-variable RFM baseline, at
-any graph degree tested, and the only significant comparison favours the simplest
-model in the study.
+\item A negative result, reported as such: with the classifier held fixed,
+neither the behavioural extension nor the graph features improve discrimination
+over a three-variable RFM baseline at any graph degree tested; the significant
+differences in the study separate classifiers, not feature sets.
 \item An evaluation protocol for this application area, together with the
 observation that differences below roughly $0.005$ ROC-AUC on this dataset are
 distinguishable neither from fold noise nor from library-version drift.
@@ -187,12 +174,9 @@ objects of study.
 
 \section{Pipeline Overview}
 
-Figure~\ref{fig:pipeline} shows the stages and where the two controls sit. The
-left-to-right upper row builds the representation; the lower row, read right to
-left, carries it through the controls into the evaluation. The two shaded stages
-are the ones that decide the outcome: the leakage control that keeps
-label-derived features inside the training fold, and the repeated evaluation
-that attaches uncertainty to every comparison.
+Figure~\ref{fig:pipeline} shows the stages. The upper row builds the
+representation; the lower row, read right to left, carries it through the two
+controls into the evaluation.
 
 \begin{figure}[t]
 \centering
@@ -216,10 +200,9 @@ that attaches uncertainty to every comparison.
 \draw[arrow] (comm.west) -- (leak.east);
 \draw[arrow] (leak.west) -- (eval.east);
 \end{tikzpicture}
-\caption{Analysis pipeline. Shaded stages are the two controls that determine the
-result: label-derived neighbourhood features are recomputed inside every training
-fold, and every comparison is run over ten repetitions of five-fold
-cross-validation with a variance-corrected significance test.}
+\caption{Analysis pipeline. Green: the component under test. Blue: the two
+controls that determine the result, fold-local recomputation of the
+label-derived features and repeated evaluation with a variance-corrected test.}
 \label{fig:pipeline}
 \end{figure}
 
@@ -235,9 +218,10 @@ contains $1{,}067{,}371$ transaction rows
 across two worksheets ($525{,}461$ and $541{,}910$); the $541{,}000$ figure often
 quoted for this dataset is the second worksheet alone.
 
-Features and labels are separated in time. The observation window runs from
-2009-12-01 to 2011-06-30 and is the only period from which features are computed.
-The prediction window runs from 2011-07-01 to 2011-09-30; a customer active in
+Features and labels are separated in time. The observation window covers
+transactions from 2009-12-01 up to the timestamp 2011-06-30 00:00 and is the
+only period from which features are computed. The prediction window covers the
+following three months, up to 2011-09-30 00:00 (92 days); a customer active in
 the observation window is labelled a churner if no purchase appears in the
 prediction window. After filtering to valid transactions inside the observation
 window ($556{,}212$ rows) and aggregating to the customer level, the working
@@ -245,15 +229,17 @@ matrix contains $5{,}038$ customers. The churn rate is $65.2\%$.
 
 That last number deserves emphasis, because it inverts an assumption often
 carried into this problem. Churners are the \emph{majority} class here, not a
-rare positive to be rescued by resampling. A 90-day inactivity horizon applied to
-a retailer with long interpurchase intervals labels most of the base as churned.
+rare positive to be rescued by resampling. A three-month inactivity horizon
+applied to a retailer with long interpurchase intervals labels most of the base
+as churned.
 This makes PR-AUC less informative than it would be under genuine imbalance, and
 we report it alongside ROC-AUC rather than as the primary metric.
 
 \subsection{Behavioural-LRFM Features}
 
 Nine customer-level features are computed inside the observation window: length
-$L$ (days between first and last purchase), recency $R$, frequency $F$ (distinct
+$L$ (days from the first purchase to the analysis date 2011-07-01), recency $R$
+(days from the last purchase to the same date), frequency $F$ (distinct
 invoices), monetary value $M$, average order value, basket size, product
 diversity, cancellation rate, and mean interpurchase time. Cancellation rate is
 restricted to cancellations dated inside the observation window; an earlier
@@ -276,8 +262,9 @@ customer base.
 
 Six graph-derived features are appended: degree, weighted degree, PageRank,
 clustering coefficient, and the two neighbourhood aggregates that motivate the
-design---neighbour churn rate (mean label among a customer's graph neighbours)
-and community churn rate (mean label within the customer's Louvain community).
+design---neighbour churn rate (mean label among a customer's own $k$ nearest
+neighbours) and community churn rate (mean label within the customer's Louvain
+community).
 
 \section{Leakage Controls}
 
@@ -286,17 +273,19 @@ the full dataset before cross-validation lets the label of a test customer
 influence the training features of its neighbours, and the resulting optimism can
 be substantial. We therefore recompute both inside each training fold: for
 customer $i$, the neighbour churn rate averages labels over
-$\mathcal{N}(i) \cap \mathcal{T}$, where $\mathcal{T}$ is the training index set,
+$\mathcal{N}(i) \cap \mathcal{T}$, where $\mathcal{N}(i)$ is the set of the $k$
+nearest neighbours of $i$ and $\mathcal{T}$ is the training index set,
 falling back to the training-fold base rate when that intersection is empty; the
 community churn rate is computed the same way within each Louvain community. The
 graph and the communities themselves are built from features only, never from
 labels, and are therefore fixed across folds.
 
-Three further controls apply throughout: standardisation is fitted inside the
-cross-validation pipeline rather than on the full matrix; K-means and Louvain
+Three further controls apply throughout: the classifier's standardisation is
+fitted inside each training fold rather than on the full matrix (the
+standardisation behind the graph, the graph and the K-means segments use the
+features of all customers, but no labels); K-means and Louvain
 cluster identifiers are one-hot encoded rather than passed as integers; and both
-Louvain and Leiden are run, so that the choice of community detector is not a
-hidden degree of freedom.
+Louvain and Leiden are reported, although the repeated-CV features use Louvain.
 
 \section{Evaluation Protocol}
 
@@ -342,6 +331,7 @@ to a re-implementation difference.
 \label{sec:results}
 
 \subsection{One Split Says the Opposite of Ten}
+\label{sec:onesplit}
 
 Table~\ref{tab:main} puts the two evaluations side by side, and the contrast is
 the result of this paper. On the single stratified five-fold split this pipeline
@@ -383,60 +373,69 @@ the single split the other metrics agree with ROC-AUC, with Graph-Enhanced
 leading on PR-AUC ($0.8689$), F1 ($0.8108$) and recall ($0.8009$); that agreement
 is what makes a single split persuasive and is exactly why it is not sufficient.
 
-\subsection{The One Significant Effect}
+\subsection{Classifier Effects Are Not Feature Effects}
+\label{sec:cross}
 
-Table~\ref{tab:cross} reports the comparisons that do reach significance. All of
-them favour logistic regression over the gradient-boosted graph model.
+In Table~\ref{tab:cross}, the group~(a) rows are the ones most easily quoted:
+logistic regression on three raw RFM variables beats the 38-feature
+gradient-boosted graph model ($p_{\mathrm{NB}} = 0.010$). Each changes the
+classifier and the feature tier at once, so it cannot separate a model-choice
+effect from a feature-engineering effect, and we do not use it as evidence about
+features. The rows in group~(b) hold the tier fixed and change only the classifier. Logistic
+regression leads at every tier, by $+0.0062$ to $+0.0108$ ROC-AUC; the lead is
+significant at the three tiers with nine or more features
+($p_{\mathrm{NB}} \le 0.017$) but not on RFM ($0.068$) or LRFM ($0.154$), and
+only the Graph-Enhanced row survives a Bonferroni correction over the five tiers.
 
 \begin{table}[t]
 \centering
-\caption{Cross-model comparisons over the same 50 paired folds. The intervals are
-bootstrap and are given for magnitude only; significance is read from
+\caption{Cross-model comparisons over the same 50 paired folds. Rows (a) change
+classifier and feature tier together; rows (b) hold the tier fixed. The intervals
+are bootstrap and are given for magnitude only; significance is read from
 $p_{\mathrm{NB}}$, for the reason set out in Sect.~\ref{sec:sig}.}
 \label{tab:cross}
 \begin{tabular}{lrrr}
 \toprule
 Comparison & $\Delta$ ROC-AUC & 95\% CI & $p_{\mathrm{NB}}$ \\
 \midrule
+\multicolumn{4}{l}{\emph{(a) Classifier and tier both change}} \\
 LogReg / B-LRFM vs.\ LGBM / Graph-Enh. & $+0.0113$ & $[+0.0096, +0.0130]$ & \textbf{0.001} \\
 LogReg / RFM vs.\ LGBM / Graph-Enh. & $+0.0099$ & $[+0.0080, +0.0119]$ & \textbf{0.010} \\
-LogReg / RFM vs.\ LGBM / RFM & $+0.0078$ & $[+0.0056, +0.0100]$ & 0.068 \\
+\multicolumn{4}{l}{\emph{(b) Same tier, classifier only}} \\
+LogReg vs.\ LGBM, both on RFM & $+0.0078$ & $[+0.0056, +0.0100]$ & 0.068 \\
+LogReg vs.\ LGBM, both on Graph-Enh. & $+0.0108$ & $[+0.0091, +0.0126]$ & \textbf{0.002} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-A three-variable linear model outperforms a 38-feature gradient-boosted model
-built on a customer similarity graph. The margin is roughly three times the
-$+0.0033$ gap that the single-split evaluation reported as the pipeline's
-improvement, and larger in magnitude than any difference between feature tiers.
-We draw a narrow conclusion from this: on this dataset, at this sample size, with
-this churn definition, the discriminative signal is close to exhausted by
-recency, frequency and monetary value, and additional model capacity is spent on
-variance rather than on signal.
+The evidence about features is therefore the same-classifier comparison of
+Table~\ref{tab:main} and its logistic-regression counterpart, where no tier
+differs from RFM (Sect.~\ref{sec:onesplit}). Together the tables suggest that
+recency, frequency and monetary value already carry most of the discriminative
+signal on this dataset, a reading the study does not test directly.
 
 Figure~\ref{fig:folds} shows the whole result in one picture. Each line is flat:
 moving along it---adding tenure, then behaviour, then segments, then the
-graph---changes nothing visible. The vertical distance between the two lines,
-which is only a change of classifier, is the one real effect. The shaded bands
-give the reason a single split cannot settle this: fold-to-fold spread is about
-$0.014$ standard deviation, an order of magnitude larger than any difference
-between tiers.
+graph---changes nothing significant. The vertical distance between the two lines
+at a fixed tier is a change of classifier alone, the group~(b) effect of
+Table~\ref{tab:cross}. The shaded bands give the reason a single split cannot
+settle this: fold-to-fold spread is about $0.014$ standard deviation, an order of
+magnitude larger than any difference between tiers.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_folds.pdf}
-\caption{Mean ROC-AUC across the five feature tiers for both classifiers. Bands
-show $\pm 1$ standard deviation of the 50 fold scores, that is, the spread an
-individual split is drawn from. Uncertainty on the paired differences themselves
-is in Tables~\ref{tab:main} and~\ref{tab:cross}.}
+\caption{Mean ROC-AUC over 50 folds across the five feature tiers for both
+classifiers. Bands show $\pm 1$ standard deviation of the fold scores, that is,
+the spread an individual split is drawn from. The arrow marks the same-tier
+classifier gap on Graph-Enhanced (Table~\ref{tab:cross}, group~(b)).}
 \label{fig:folds}
 \end{figure}
 
 \subsection{The Result Does Not Depend on the Graph Degree}
 
-A negative result about a graph invites the obvious question of whether it is a
-result about one particular graph. We therefore rebuilt the graph, the
-communities and the fold-local features from scratch at
+A negative result about a graph may be a result about one particular graph. We
+therefore rebuilt the graph, the communities and the fold-local features at
 $k \in \{5, 10, 15, 20\}$ and reran the full repeated-CV protocol at each
 setting. Table~\ref{tab:ksweep} reports the outcome.
 
@@ -474,9 +473,11 @@ neighbour churn rate ($0.250$), interpurchase time ($0.224$) and community churn
 rate ($0.215$). Read as an importance ranking, this appears to confirm that the
 neighbourhood aggregates matter: two of the top five features are graph-derived.
 
-They do not matter for discrimination: the tier without them (B-LRFM+Seg,
-$0.8044$) and the tier with them (Graph-Enhanced, $0.8044$) are
-indistinguishable. This is a matter of definition rather than a contradiction.
+They do not matter for discrimination: the tier without the six graph features
+(B-LRFM+Seg, $0.8044$) and the tier with them (Graph-Enhanced, $0.8044$) are
+indistinguishable. The two aggregates are removed together with the four static
+graph features, so this ablation does not isolate either aggregate on its own.
+This is a matter of definition rather than a contradiction.
 SHAP attributes how a \emph{fitted} model distributes credit across the features
 it was given, so a feature correlated with both the target and the rest of the
 feature set absorbs attribution while adding nothing the others did not already
@@ -486,20 +487,16 @@ answers ``would removing it cost anything?'', and here it answers no.
 \subsection{Relation to the Segmentation Baseline}
 
 Our starting point \cite{viannafilho2026rfm} segments customers on discrete 1--5
-RFM scores in three dimensions; the present work predicts churn in a
-nine-dimensional continuous space. Silhouette scores are not comparable across
-different feature spaces---a low-dimensional discrete space produces tighter
-clusters as a property of the space---so we make no head-to-head
-clustering-quality claim. For reference, on its own scoring space the baseline
-reaches a silhouette of $0.398$ at $k = 4$ as published, which we reproduce at
-$0.398$; K-means on our nine-dimensional space reaches $0.219$ and Louvain
-reaches $-0.050$ on the same measure. The relationship between the two works is
-scope extension, not improvement. The communities remain
-usable for prioritisation even though they do not improve prediction: ranked by
-churn probability times monetary value, they separate a high-value at-risk group
+RFM scores in three dimensions; we predict churn in a nine-dimensional continuous
+space. Silhouette scores are not comparable across feature spaces, so we make no
+clustering-quality claim: the baseline reports $0.398$ at $k = 4$ on its own
+scoring space, while K-means and Louvain on our space reach $0.219$ and
+$-0.050$. The relation between the two works is scope extension, not
+improvement. The communities remain usable for prioritisation: ranked by churn
+probability times monetary value, they separate a high-value at-risk group
 ($327$ customers, $82\%$ churn) from a high-value loyal one ($418$ customers,
-$24\%$ churn). With no campaign-response labels in the data, that is a
-descriptive output only.
+$24\%$ churn), a descriptive output only, since the data contain no campaign
+responses.
 
 \section{Discussion}
 \label{sec:disc}
@@ -527,14 +524,30 @@ restatement of what the model has rather than new information. This reading is
 consistent with where the feature does work. The telecommunications and social
 graph results cited in Sect.~2 are built on recorded interaction---who called
 whom, who plays with whom---not on similarity computed from the model's own
-inputs \cite{kostic2020socialnetwork,lee2025tempodegraphnet}. A retail graph
-built from an interaction signal absent from the feature matrix---shared baskets,
-shared categories, referral or household links---would be a genuinely different
-test, and is the experiment we would run next.
-Two weaker readings also fit: a 90-day inactivity label on a majority-churn base
-may be too coarse for neighbourhood effects to surface, and with all tiers near
-$0.81$ ROC-AUC the binding constraint may be the representation rather than the
-model class.
+inputs \cite{kostic2020socialnetwork,lee2025tempodegraphnet}.
+
+The nature of churn also differs between these settings. In telecommunications,
+churn is the cancellation of an explicit service relationship, and peer
+influence has a plausible channel: subscribers who call each other share the
+value of being on the same network, and a subscriber's propensity to churn has
+been related to the number of contacts who have already left
+\cite{dasgupta2008socialties,kostic2020socialnetwork}. In non-contractual
+retail, churn is never announced; whether a customer is still active must be
+inferred from the timing of past purchases \cite{schmittlein1987counting}, and
+two customers who buy alike need not know of each other, so there is no channel
+through which one's departure could reach the other. A behavioural-similarity
+graph therefore links customers who resemble each other, not customers who
+influence each other; its neighbourhood churn rate can at most summarise what
+similar customers did, which the classifier already learns from the features.
+Neighbourhood features should be expected to help where edges carry influence,
+not where they carry only resemblance. A retail graph built from an
+interaction signal absent from the feature matrix---shared baskets, shared
+categories, referral or household links---would be a genuinely different test,
+and is the experiment we would run next.
+Two weaker readings also fit: a three-month inactivity label on a majority-churn
+base may be too coarse for neighbourhood effects to surface, and with all tiers
+near $0.81$ ROC-AUC the binding constraint may be the representation rather than
+the model class.
 
 \section{Threats to Validity}
 
@@ -542,65 +555,61 @@ model class.
 make no claim about other sectors or horizons; the effect-size floor we report is
 specific to this dataset and sample size.
 
-\textbf{One graph family.} The degree sweep in Sect.~\ref{sec:results} shows the
-result is not an artefact of $k$, but every setting is still a $k$-nearest
-neighbour graph on standardised Behavioural-LRFM features with the same distance
-and the same weighting. A different graph family---built from co-purchase,
-category overlap or household links---is untested here and is where we expect the
-hypothesis to get a fairer hearing.
+\textbf{One graph family.} The degree sweep rules out an artefact of $k$, but
+every setting is still a $k$-NN graph on the standardised Behavioural-LRFM
+features; graphs built from co-purchase, category overlap or household links are
+untested here (Sect.~\ref{sec:contagion}).
 
-\textbf{Planned components not implemented.} Two components described in our
-study design were not implemented and form no part of any result reported here: a
-country-of-origin categorical encoding, and spectral clustering as a third
-community detection algorithm. We list them so that the gap between design and
-execution is visible.
+\textbf{Planned components not implemented.} A country-of-origin encoding and
+spectral clustering, both in our study design, were not implemented and form no
+part of any result here.
 
-\textbf{Metric choice.} With churners in the majority, PR-AUC does not carry its
-usual interpretation. We report both metrics and base no conclusion on PR-AUC
-alone.
+\textbf{Metric choice.} With churners in the majority, PR-AUC loses its usual
+interpretation; no conclusion rests on PR-AUC alone.
 
-\textbf{Literature search is targeted, not exhaustive.} We searched for prior use
-of neighbourhood-churn features and located the telecommunications and social
-graph work discussed in Sect.~2, which uses interaction graphs rather than
-similarity graphs. We did not find the retail similarity-graph variant tested
-here, but the search was targeted rather than systematic, and we make no priority
-claim of any kind.
+\textbf{Literature search is targeted, not exhaustive.} Prior neighbourhood-churn
+work we located (Sect.~2) uses interaction graphs. We did not find the retail
+similarity-graph variant tested here, but the search was not systematic, and we
+make no priority claim.
 
 \textbf{No business validation.} Expected retention value ranks customers by a
-model quantity, not by observed campaign response. Its practical value is
-untested.
+model quantity, not by observed campaign response; its practical value is untested.
 
 \section{Conclusion}
 
 We built the pipeline the behavioural-peer-effect hypothesis calls for and
 evaluated it under fold-local recomputation of the label-derived features and
-repeated cross-validation with a corrected test. The hypothesis is not supported
-on this dataset at any graph degree tested, and the only significant comparison
-favours logistic regression on three raw RFM variables over the full graph model
-($p = 0.010$).
+repeated cross-validation with a corrected test. With the classifier held fixed,
+the hypothesis is not supported on this dataset at any graph degree tested; the
+significant differences are between classifiers, not feature sets.
 
 The methodological point generalises further than the negative result. An
 evaluation that reports one cross-validated number per configuration cannot
-distinguish a $0.003$ ROC-AUC difference from the partition that produced it, and
-differences of that size are what feature-engineering studies in this area
-frequently report. The controls used here are inexpensive---ten repetitions of
-five-fold cross-validation on $5{,}038$ customers is a matter of minutes---and we
-would argue they belong in the default protocol rather than in an appendix.
+distinguish a $0.003$ ROC-AUC difference from the partition that produced it. The
+controls used here are inexpensive---ten repetitions of five-fold
+cross-validation on $5{,}038$ customers take minutes---and we would argue they
+belong in the default protocol rather than in an appendix.
 
 \subsubsection{Reproducibility.}
 Code, per-fold scores, significance summaries and raw run logs are available at
 \url{https://github.com/VoDucNhatku/graph-behavioral-lrfm-churn}, tagged
-\texttt{v1.0-submission}. Library versions are pinned to the environment that
-produced every reported number, and the result figure is generated from the
-committed per-fold scores, so it cannot drift from the tables. The full pipeline
-runs in under ten minutes on a laptop with no GPU.
+\texttt{v1.1-camera-ready}. Library versions are pinned to the environment that
+produced every reported number; Fig.~\ref{fig:folds} and Table~\ref{tab:cross}
+are computed from the committed per-fold scores by scripts in the repository.
+The full pipeline runs in under ten minutes on a laptop with no GPU.
 
-\subsubsection{Declaration on generative AI.}
-During the preparation of this work the author used a large language model
-(Claude, Anthropic) to draft and revise the manuscript, to implement parts of the
-evaluation and figure code, and to cross-check reported numbers against the
-result files. The author verified every reported number against the archived runs
-and takes full responsibility for the content.
+\begin{credits}
+\subsubsection{\ackname}
+The authors used a large language model (Claude, Anthropic) to draft and revise
+the manuscript, to implement parts of the evaluation and figure code, and to
+cross-check reported numbers against the result files; every reported number was
+verified against the archived runs, and the authors take full responsibility for
+the content.
+
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are relevant to the
+content of this article.
+\end{credits}
 
 \bibliographystyle{splncs04}
 \bibliography{refs}

@@ -1,8 +1,12 @@
-# Graph-Enhanced Behavioral-LRFM Framework for Explainable Churn Prediction in Non-Contractual E-Commerce
+# When Graph-Derived Neighbourhood Features Do Not Help: A Leakage-Controlled Evaluation of Behavioural-LRFM Churn Prediction in Non-Contractual Retail
 
-**Author:** Võ Đức Nhật  
+**Authors:** Võ Đức Nhật, Dương Gia Bảo  
 **Mentor:** Nguyễn Hoàng Linh  
 **Sub-committee:** Economic & Business — AI Research Team
+
+**Paper:** EAI FISAT 2026, paper #366956 (short paper, accepted). The camera-ready
+version is tagged `v1.1-camera-ready`; the version that went to review is tagged
+`v1.0-submission`. Every number in both versions comes from the same result files.
 
 ---
 
@@ -25,7 +29,7 @@ and experiment source files are preserved.
 
 ## Overview
 
-This repository implements a complete machine learning pipeline for customer churn prediction in non-contractual e-commerce settings. The framework extends classical RFM analysis into a **Behavioral-LRFM** feature space, constructs a **customer similarity graph**, and applies **Louvain/Leiden community detection** to discover cohesive behavioral communities. Graph-derived node features — including **NeighborChurnRate** and **CommunityChurnRate** — are integrated into XGBoost and LightGBM classifiers. Finally, **SHAP analysis at the community level** generates actionable, segment-specific retention strategies.
+This repository implements a complete machine learning pipeline for customer churn prediction in non-contractual e-commerce settings. The framework extends classical RFM analysis into a **Behavioral-LRFM** feature space, constructs a **customer similarity graph**, and applies **Louvain/Leiden community detection** to discover cohesive behavioral communities. Graph-derived node features — including **NeighborChurnRate** and **CommunityChurnRate** — are evaluated with LightGBM and logistic regression (XGBoost appears only in the auxiliary variants). Finally, **SHAP analysis at the community level** generates actionable, segment-specific retention strategies.
 
 **Honest finding.** The pipeline is fully implemented and leak-free, but it does not beat
 its own baseline. Under repeated cross-validation the graph-derived features add nothing
@@ -72,17 +76,24 @@ change a single conclusion, but it is worth stating rather than presenting these
 as exact. Numbers above are from the 2026-08-07 run
 (`results_rerun/full-2026-08-07/significance_test.log`).
 
-### The one significant effect
+### Cross-model comparisons (classifier effects, not feature effects)
 
 | Comparison (same 50 paired folds) | Δ ROC-AUC | 95% CI | p (NB) |
 |---|---:|---:|---:|
+| *(a) classifier and tier both change* | | | |
 | LogReg / B-LRFM vs LightGBM / Graph-Enhanced | +0.0113 | [+0.0096, +0.0130] | **0.001** |
 | LogReg / RFM vs LightGBM / Graph-Enhanced | +0.0099 | [+0.0080, +0.0119] | **0.010** |
-| LogReg / RFM vs LightGBM / RFM | +0.0078 | [+0.0056, +0.0100] | 0.068 |
+| *(b) same tier, classifier only* | | | |
+| LogReg vs LightGBM, both on RFM | +0.0078 | [+0.0056, +0.0100] | 0.068 |
+| LogReg vs LightGBM, both on Graph-Enhanced | +0.0108 | [+0.0091, +0.0126] | **0.002** |
 
-A 3-variable linear model beats a 38-feature gradient-boosted graph pipeline (9 B-LRFM +
-4 static graph + 23 one-hot segment/community + NeighborChurnRate + CommunityChurnRate), and the
-gap is roughly 3x larger than any difference the graph features produce.
+Rows (a) change the classifier and the feature tier at once, so they say nothing about
+the graph features (38 features = 9 B-LRFM + 4 static graph + 23 one-hot
+segment/community + NeighborChurnRate + CommunityChurnRate). Rows (b) isolate the
+classifier: logistic regression leads at every tier (+0.0062 to +0.0108), significantly
+at the three tiers with nine or more features. Evidence about features comes from the
+same-classifier table above. All rows, including the LRFM, B-LRFM and B-LRFM+Seg ones
+not shown here, are in `results/cross_model_summary.csv` (`src/cross_model_test.py`).
 
 ### Single-split reference (seed 42, 5-fold, LightGBM)
 
@@ -129,13 +140,14 @@ mistake this project made and corrected.
 │   ├── compare_methods_v2.py     # clustering comparison against Vianna Filho (2026)
 │   ├── improvements_pipeline.py  # auxiliary variants (ensembles, PCA, Leiden)
 │   ├── significance_test.py      # repeated CV + Nadeau-Bengio corrected test
+│   ├── cross_model_test.py       # Table 2 from the committed per-fold scores
 │   ├── make_paper_figures.py     # builds the paper figure from the result files
 │   └── audit_paper.py            # checks every number in the paper against results/
 ├── results/                      # every file here is produced by a script above
 ├── results_rerun/                # raw run logs, kept as provenance
 ├── paper/
-│   ├── main.tex, refs.bib        # LNCS manuscript, 14 verified references
-│   ├── main.pdf                  # compiled, 12 pages
+│   ├── main.tex, refs.bib        # LNCS camera-ready manuscript, 16 verified references
+│   ├── main.pdf                  # compiled, 11 pages + references
 │   └── figures/                  # generated, not hand-drawn
 ├── data/.gitkeep                 # dataset not tracked; see Dataset below
 ├── requirements.txt              # pinned to the environment that produced results/
@@ -150,6 +162,7 @@ mistake this project made and corrected.
 | `compare_methods_v2.py` | `comparison_v2.csv`, `comparison_v2.png` |
 | `improvements_pipeline.py` | `improvements_results.csv`, `improvements_summary.png` |
 | `significance_test.py` | `significance_folds.csv`, `significance_summary.csv`; with `LRFM_KNN_K` set, the `*_k5/10/15/20` sweep files |
+| `cross_model_test.py` | `cross_model_summary.csv` (reads `significance_folds.csv`; no model is refitted) |
 
 No orphan outputs are kept: if a file is in `results/`, one of these scripts
 regenerates it. Run all four in the order above to rebuild the directory from
@@ -165,7 +178,7 @@ Download: https://archive.ics.uci.edu/dataset/502/online+retail+ii
 Place the downloaded `.xlsx` file as `online_retail_II.xlsx` in the project root before running the pipeline.
 
 ```
-~541,000 invoice records | UK-based online retailer | Dec 2009 – Dec 2011
+1,067,371 transaction rows in two worksheets (525,461 + 541,910) | UK-based online retailer | Dec 2009 – Dec 2011
 ```
 
 ---
@@ -203,8 +216,9 @@ Output files will be saved to `results/`.
 
 ### 1. Data Split (No Leakage)
 ```
-Observation window : 2009-12-01 → 2011-06-30  (feature computation)
-Prediction window  : 2011-07-01 → 2011-09-30  (churn label)
+Observation window : 2009-12-01 → 2011-06-30 00:00  (feature computation)
+Prediction window  : 2011-06-30 00:00 → 2011-09-30 00:00, 92 days  (churn label)
+Analysis date      : 2011-07-01  (reference date for L and R)
 ```
 
 ### 2. Behavioral-LRFM Features

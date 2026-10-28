@@ -13,6 +13,10 @@ letting LaTeX shrink them is what made the labels too small to read.
 Output (vector PDF, so it stays sharp at print size):
     paper/figures/fig_folds.pdf    tier means per classifier, with fold spread
 
+Camera-ready changes: no title inside the figure (the LNCS caption carries it),
+TrueType fonts embedded instead of Type 3, and the arrow labelled with the
+same-tier classifier gap it actually spans, with its corrected p-value.
+
 Run:  python src/make_paper_figures.py
 """
 
@@ -30,10 +34,11 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from scipy import stats
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.environ.get("LRFM_OUT_DIR", os.path.join(ROOT, "results"))
-FIG = os.path.join(ROOT, "paper", "figures")
+FIG = os.environ.get("LRFM_FIG_DIR", os.path.join(ROOT, "paper", "figures"))
 os.makedirs(FIG, exist_ok=True)
 
 TEXT_WIDTH_IN = 4.8               # LNCS text block width
@@ -59,6 +64,7 @@ plt.rcParams.update({
     "axes.spines.top": False,
     "axes.spines.right": False,
     "figure.dpi": 200,
+    "pdf.fonttype": 42,
 })
 
 
@@ -66,8 +72,8 @@ folds = pd.read_csv(os.path.join(RES, "significance_folds.csv"))
 pivot = folds.pivot_table(index=["Repeat", "Fold"], columns=["Model", "Tier"], values="AUC")
 
 # ── The one result figure: tier means per classifier, with fold spread ───────────
-fig, ax = plt.subplots(figsize=(TEXT_WIDTH_IN, 2.55))
-fig.subplots_adjust(left=0.135, right=0.985, top=0.665, bottom=0.195)
+fig, ax = plt.subplots(figsize=(TEXT_WIDTH_IN, 1.75))
+fig.subplots_adjust(left=0.135, right=0.985, top=0.97, bottom=0.285)
 
 face = {"LightGBM": "#c6d4e1", "Logistic Regression": "#bcd9c9"}
 edge = {"LightGBM": "#2c5d8a", "Logistic Regression": HIGHLIGHT}
@@ -90,9 +96,15 @@ for model, arr, txt in (("Logistic Regression", lg, "Logistic\nregression"),
     ax.text(-0.26, arr[0], txt, color=edge[model], fontsize=7.2, fontweight="bold",
             ha="right", va="center", linespacing=1.35)
 
+# same-tier classifier gap on Graph-Enhanced, with the corrected resampled t-test
+d = (pivot[("Logistic Regression", "Graph-Enhanced")]
+     - pivot[("LightGBM", "Graph-Enhanced")]).values
+t_nb = d.mean() / np.sqrt((1.0 / len(d) + 1.0 / 4) * d.var(ddof=1))
+p_nb = 2 * stats.t.sf(abs(t_nb), df=len(d) - 1)
 ax.annotate("", xy=(4.30, lg[-1]), xytext=(4.30, lgbm[-1]),
             arrowprops=dict(arrowstyle="<->", color=INK, lw=0.9))
-ax.text(4.40, (lg[-1] + lgbm[-1]) / 2, "the only\nreal effect\n$\\approx$ 0.010",
+ax.text(4.40, (lg[-1] + lgbm[-1]) / 2,
+        f"classifier\ngap {d.mean():+.3f}\n$p_{{NB}}$ = {p_nb:.3f}",
         fontsize=6.9, color=INK, va="center", linespacing=1.4)
 
 ax.set_xlim(-1.65, 5.30)
@@ -104,11 +116,6 @@ ax.set_ylim(0.7855, 0.8325)
 ax.grid(axis="y", color=GRID, lw=0.6, alpha=0.7)
 ax.set_axisbelow(True)
 
-fig.text(0.022, 0.985, "Adding features moves nothing; the classifier moves everything",
-         fontsize=8.4, fontweight="bold", color=INK, va="top")
-fig.text(0.022, 0.940, "Lines are mean ROC-AUC over 50 folds. Shaded bands are the fold-to-fold "
-                       "spread ($\\pm$1 SD),\nfar wider than any movement along a line.",
-         fontsize=6.9, color=MUTED, va="top", linespacing=1.5)
 
 out2 = os.path.join(FIG, "fig_folds.pdf")
 fig.savefig(out2)
