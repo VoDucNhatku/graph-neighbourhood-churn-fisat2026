@@ -21,10 +21,11 @@ in Non-Contractual Retail}
 
 \titlerunning{When Graph-Derived Neighbourhood Features Do Not Help}
 
-\author{Duc Nhat Vo \and Gia Bao Duong}
+\author{Duc Nhat Vo\textsuperscript{a}, Gia Bao Duong\textsuperscript{b}}
 \authorrunning{D. N. Vo and G. B. Duong}
 \institute{FPT University, Ho Chi Minh City, Vietnam\\
-\email{voducnhat242006@gmail.com, ilyrabao@gmail.com}}
+\email{\textsuperscript{a}voducnhat242006@gmail.com,
+\textsuperscript{b}ilyrabao@gmail.com}}
 
 \maketitle
 
@@ -60,7 +61,7 @@ Community detection \and Repeated cross-validation \and Negative result.}
 Non-contractual retail gives no cancellation signal. A customer who stops buying
 does not announce it, so churn has to be defined by inactivity over a chosen
 horizon, and the modelling task is to predict that inactivity from purchase
-history. The RFM representation---recency, frequency, monetary value---has been
+history. The RFM representation (recency, frequency, monetary value) has been
 the working vocabulary of this problem for decades, and a large applied
 literature extends it: adding relationship length, adding demographic attributes
 \cite{ho2023extended}, or unrolling the triple over time
@@ -73,16 +74,16 @@ super-vertices and the reduced graph is bounded independently of the number of
 customers \cite{viannafilho2026rfm}. Once customers are vertices, a next step
 suggests itself: if a similarity graph can be built, then community detection
 \cite{blondel2008louvain,traag2019leiden} can partition it, and graph-derived
-quantities---degree, centrality, and in particular the churn rate observed among
-a customer's neighbours---can be appended to the feature matrix of a supervised
+quantities such as degree, centrality and, in particular, the churn rate observed
+among a customer's neighbours can be appended to the feature matrix of a supervised
 churn model. The underlying hypothesis is a contagion one: churn risk is partly a
 property of the behavioural neighbourhood, not only of the individual.
 
 This paper tests that hypothesis and does not find support for it. We build the
-pipeline the hypothesis calls for---a nine-dimensional behavioural extension of
+pipeline the hypothesis calls for: a nine-dimensional behavioural extension of
 RFM, a $k$-nearest-neighbour customer similarity graph, Louvain and Leiden
 communities, and graph node features including neighbour and community churn
-rates---and we evaluate it against progressively simpler feature sets. The
+rates. We then evaluate it against progressively simpler feature sets. The
 evaluation is where the contribution lies. Two controls turn out to be decisive:
 
 \begin{enumerate}
@@ -262,7 +263,7 @@ customer base.
 
 Six graph-derived features are appended: degree, weighted degree, PageRank,
 clustering coefficient, and the two neighbourhood aggregates that motivate the
-design---neighbour churn rate (mean label among a customer's own $k$ nearest
+design: neighbour churn rate (mean label among a customer's own $k$ nearest
 neighbours) and community churn rate (mean label within the customer's Louvain
 community).
 
@@ -356,7 +357,7 @@ Why the single-split column misleads is taken up in Sect.~\ref{sec:disc}.}
 \cmidrule(lr){2-2}\cmidrule(l){3-5}
 Feature tier & ROC-AUC & ROC-AUC & $\Delta$ vs RFM & $p_{\mathrm{NB}}$ \\
 \midrule
-RFM (baseline) & 0.8065 & 0.8066 & --- & --- \\
+RFM (baseline) & 0.8065 & 0.8066 & & \\
 LRFM & 0.8071 & 0.8074 & $+0.0009$ & 0.755 \\
 B-LRFM & 0.8067 & 0.8054 & $-0.0012$ & 0.742 \\
 B-LRFM+Seg & 0.8073 & 0.8044 & $-0.0022$ & 0.561 \\
@@ -367,8 +368,8 @@ Graph-Enhanced & \textbf{0.8098} & 0.8044 & $-0.0021$ & 0.590 \\
 
 No tier differs significantly from the RFM baseline, and three of the four point
 differences are negative. The same holds for PR-AUC and for logistic regression
-as the classifier: across the four metric-classifier combinations---sixteen
-tier-versus-baseline comparisons---the smallest $p_{\mathrm{NB}}$ is $0.144$. On
+as the classifier: across the four metric-classifier combinations (sixteen
+tier-versus-baseline comparisons), the smallest $p_{\mathrm{NB}}$ is $0.144$. On
 the single split the other metrics agree with ROC-AUC, with Graph-Enhanced
 leading on PR-AUC ($0.8689$), F1 ($0.8108$) and recall ($0.8009$); that agreement
 is what makes a single split persuasive and is exactly why it is not sufficient.
@@ -415,8 +416,8 @@ recency, frequency and monetary value already carry most of the discriminative
 signal on this dataset, a reading the study does not test directly.
 
 Figure~\ref{fig:folds} shows the whole result in one picture. Each line is flat:
-moving along it---adding tenure, then behaviour, then segments, then the
-graph---changes nothing significant. The vertical distance between the two lines
+adding tenure, then behaviour, then segments, then the graph changes nothing
+significant. The vertical distance between the two lines
 at a fixed tier is a change of classifier alone, the group~(b) effect of
 Table~\ref{tab:cross}. The shaded bands give the reason a single split cannot
 settle this: fold-to-fold spread is about $0.014$ standard deviation, an order of
@@ -522,8 +523,8 @@ proximity in a feature space derived from the same purchase history that already
 feeds the classifier, so the neighbour churn rate is plausibly a smoothed
 restatement of what the model has rather than new information. This reading is
 consistent with where the feature does work. The telecommunications and social
-graph results cited in Sect.~2 are built on recorded interaction---who called
-whom, who plays with whom---not on similarity computed from the model's own
+graph results cited in Sect.~2 are built on recorded interaction (who called
+whom, who plays with whom), not on similarity computed from the model's own
 inputs \cite{kostic2020socialnetwork,lee2025tempodegraphnet}.
 
 The nature of churn also differs between these settings. In telecommunications,
@@ -541,8 +542,8 @@ influence each other; its neighbourhood churn rate can at most summarise what
 similar customers did, which the classifier already learns from the features.
 Neighbourhood features should be expected to help where edges carry influence,
 not where they carry only resemblance. A retail graph built from an
-interaction signal absent from the feature matrix---shared baskets, shared
-categories, referral or household links---would be a genuinely different test,
+interaction signal absent from the feature matrix, such as shared baskets, shared
+categories, referral or household links, would be a genuinely different test,
 and is the experiment we would run next.
 Two weaker readings also fit: a three-month inactivity label on a majority-churn
 base may be too coarse for neighbourhood effects to surface, and with all tiers
@@ -586,8 +587,8 @@ significant differences are between classifiers, not feature sets.
 The methodological point generalises further than the negative result. An
 evaluation that reports one cross-validated number per configuration cannot
 distinguish a $0.003$ ROC-AUC difference from the partition that produced it. The
-controls used here are inexpensive---ten repetitions of five-fold
-cross-validation on $5{,}038$ customers take minutes---and we would argue they
+controls used here are inexpensive (ten repetitions of five-fold
+cross-validation on $5{,}038$ customers take minutes), and we would argue they
 belong in the default protocol rather than in an appendix.
 
 \subsubsection{Reproducibility.}
