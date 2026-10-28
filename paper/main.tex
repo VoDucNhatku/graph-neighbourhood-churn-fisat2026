@@ -57,16 +57,15 @@ fold, so no test label reaches the feature matrix. Second, every comparison runs
 over ten repetitions of five-fold cross-validation and is judged by the corrected
 resampled $t$-test rather than by a single split. Under these controls the idea
 does not hold. With the classifier fixed, no feature tier beats a plain
-three-variable RFM baseline, on either ROC-AUC or PR-AUC, for either classifier.
-The finding holds as the graph degree varies from 5 to 20. The graph-enhanced
-tier gains $+0.0033$ ROC-AUC on one fold partition and reverses sign across ten.
-Every significant difference involves a change of classifier, so none of them
-speaks to the graph features. Attribution and contribution also come apart: the
+three-variable RFM baseline, on either ROC-AUC or PR-AUC, for either classifier,
+at any graph degree from 5 to 20. The graph-enhanced tier gains $+0.0033$ ROC-AUC
+on one fold partition and reverses sign across ten. Every significant difference
+involves a change of classifier, so none speaks to the graph features. Attribution and contribution also come apart: the
 neighbourhood churn rate ranks third by SHAP, yet removing the graph features
 costs nothing. Because the $k$-NN graph is built on the features the classifier
 already uses, its neighbourhood churn rate largely restates existing information
-by construction; a graph built from actual interactions, such as co-purchase or
-referral links, may behave differently. We argue that single-split evaluation cannot separate an effect this
+by construction; a graph built from co-purchase or referral links may behave
+differently. We argue that single-split evaluation cannot separate an effect this
 small from fold noise.
 
 \keywords{Churn prediction \and RFM \and Customer similarity graph \and
