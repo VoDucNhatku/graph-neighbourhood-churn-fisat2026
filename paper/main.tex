@@ -556,27 +556,21 @@ the model class.
 
 \section{Threats to Validity}
 
-\textbf{Single dataset.} All results come from one retailer over two years. We
-make no claim about other sectors or horizons; the effect-size floor we report is
-specific to this dataset and sample size.
+All results come from one retailer over two years, so we make no claim about
+other sectors or horizons, and the effect-size floor we report holds only for
+this dataset and sample size. The degree sweep rules out an artefact of $k$, but
+every graph we tried is a $k$-NN graph on the same features, and graphs built
+from interactions remain untested (Sect.~\ref{sec:contagion}). Two parts of the
+original study design, a country-of-origin encoding and spectral clustering, were
+never implemented and play no role in the results. Because churners are the
+majority class, \mbox{PR-AUC} loses its usual meaning here, and no conclusion
+rests on it alone.
 
-\textbf{One graph family.} The degree sweep rules out an artefact of $k$, but
-every setting is a $k$-NN graph on the same features; interaction-based graphs
-are untested (Sect.~\ref{sec:contagion}).
-
-\textbf{Planned components not implemented.} A country-of-origin encoding and
-spectral clustering, both in our study design, were not implemented and form no
-part of any result here.
-
-\textbf{Metric choice.} With churners in the majority, PR-AUC loses its usual
-interpretation; no conclusion rests on PR-AUC alone.
-
-\textbf{Literature search is targeted.} The prior neighbourhood-churn work we
-found (Sect.~2) uses interaction graphs. Our search was not systematic, and we
-make no priority claim.
-
-\textbf{No business validation.} Expected retention value ranks customers by a
-model quantity, not by observed campaign response; its practical value is untested.
+Our literature search was targeted rather than systematic. The studies of
+neighbourhood churn that we found (Sect.~2) use interaction graphs, but we make
+no priority claim. Finally, the expected retention value ranks customers by
+a model output, not by observed campaign response, so its practical value is
+untested.
 
 \section{Conclusion}
 
