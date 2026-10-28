@@ -2,7 +2,7 @@
 
 **Duc Nhat Vo, Gia Bao Duong, Nguyen Minh Hai Tran** (Võ Đức Nhật, Dương Gia Bảo, Trần Nguyễn Minh Hải)  
 FPT University, Ho Chi Minh City, Vietnam  
-**Mentor:** Nguyễn Hoàng Linh · **Sub-committee:** Economic & Business — AI Research Team
+**Sub-committee:** Economic & Business — AI Research Team
 
 Short paper at **EAI FISAT 2026**, the 1st EAI FPT International Conference on Intelligent
 Systems and Advanced Technologies (Ho Chi Minh City, 25–27 November 2026), to appear in
