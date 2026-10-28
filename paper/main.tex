@@ -38,10 +38,11 @@ in Non-Contractual Retail}
 
 \titlerunning{When Graph-Derived Neighbourhood Features Do Not Help}
 
-\author{Duc Nhat Vo\textsuperscript{a}, Gia Bao Duong\textsuperscript{b}}
+% Affiliation first, then names, then e-mails (author's requested order).
+\author{{\small FPT University, Ho Chi Minh City, Vietnam}\\[4pt]
+Duc Nhat Vo\textsuperscript{a}, Gia Bao Duong\textsuperscript{b}}
 \authorrunning{D. N. Vo and G. B. Duong}
-\institute{FPT University, Ho Chi Minh City, Vietnam\\
-\email{\textsuperscript{a}voducnhat242006@gmail.com,
+\institute{\email{\textsuperscript{a}voducnhat242006@gmail.com,
 \textsuperscript{b}ilyrabao@gmail.com}}
 
 \maketitle
@@ -540,10 +541,9 @@ Churn itself also differs between the two settings. In telecommunications it is
 the cancellation of a service contract, and peers have a way to influence each
 other: people who call each other benefit from staying on the same network, and
 a subscriber's churn risk has been linked to the number of contacts who have
-already left \cite{dasgupta2008socialties,kostic2020socialnetwork}. In
-non-contractual retail nobody cancels. Churn is inferred from a gap in purchases
-\cite{schmittlein1987counting}, and two customers who buy alike need not know
-each other. A similarity graph therefore connects customers who resemble each
+already left \cite{kostic2020socialnetwork}. In non-contractual retail nobody
+cancels. Churn is inferred from a gap in purchases, and two customers who buy
+alike need not know each other. A similarity graph therefore connects customers who resemble each
 other, not customers who influence each other, and its neighbourhood churn rate
 can at most summarise what similar customers did, which the classifier already
 sees in the features. A retail graph built from interactions absent from the
