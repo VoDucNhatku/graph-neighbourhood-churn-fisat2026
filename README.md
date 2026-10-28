@@ -1,8 +1,7 @@
 # When Graph-Derived Neighbourhood Features Do Not Help: A Leakage-Controlled Evaluation of Behavioural-LRFM Churn Prediction in Non-Contractual Retail
 
 **Duc Nhat Vo, Gia Bao Duong, Nguyen Minh Hai Tran** (Võ Đức Nhật, Dương Gia Bảo, Trần Nguyễn Minh Hải)  
-FPT University, Ho Chi Minh City, Vietnam  
-**Sub-committee:** Economic & Business — AI Research Team
+FPT University, Ho Chi Minh City, Vietnam
 
 Short paper at **EAI FISAT 2026**, the 1st EAI FPT International Conference on Intelligent
 Systems and Advanced Technologies (Ho Chi Minh City, 25–27 November 2026), to appear in
